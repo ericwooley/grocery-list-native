@@ -1,0 +1,9 @@
+{
+	"globals": {
+		"it": true
+	},
+  "extends": ["standard", "standard-react", "plugin:flowtype/recommended"],
+	"plugins": [
+    "flowtype"
+  ]
+}
