@@ -1,28 +1,21 @@
 import React, {PropTypes, Component} from 'react'
-import { StyleSheet, Text, View, TextInput, Button } from 'react-native'
+import { Dimensions, StyleSheet, View, TextInput, Button, Image } from 'react-native'
 import Layout from '../components/layout'
-import { graphql, withApollo } from 'react-apollo'
-import gql from 'graphql-tag'
+import { withApollo } from 'react-apollo'
 import register from '../requests/register'
 import login from '../requests/login'
-const MyQuery = gql`
-query getUser {
-  user {
-    username
-  }
-}
-`
 // route: React.Route, navigator: React.NavigatorStatic
 export class RequireAuth extends Component {
   constructor () {
     super()
-    this.state = {
-      isLoading: false,
-      username: '',
-      password: ''
-    }
+    this.state = this.defaultState
     this.register = this.register.bind(this)
     this.login = this.login.bind(this)
+  }
+  defaultState = {
+    isLoading: false,
+    username: '',
+    password: ''
   }
   register () {
     register(this.state.username, this.state.password)
@@ -32,34 +25,37 @@ export class RequireAuth extends Component {
   login () {
     login(this.state.username, this.state.password)
     .catch(e => alert('Error logging in'))
+    .then(() => this.setState(this.defaultState))
     .then(() => this.props.data.refetch())
     .catch(e => alert(e.message))
   }
   render () {
+    console.log(require('../images/fuzzy.jpeg'))
     return !this.props.data.user ? (
       <Layout>
-        <View style={styles.form}>
-          <Text style={styles.registerTitle}>
-            Register
-          </Text>
-          <TextInput
-            style={styles.input}
-            placeholder='User Name'
-            value={this.state.username}
-            autoCapitalize='none'
-            onChangeText={(username) => this.setState({username})} />
-          <TextInput
-            style={styles.input}
-            placeholder='Password'
-            secureTextEntry
-            value={this.state.password}
-            autoCapitalize='none'
-            onChangeText={(password) => this.setState({password})} />
-          <View style={styles.buttonWrapper}>
-            <Button title='Login' onPress={this.login} />
-            <Button title='Register' onPress={this.register} />
+        <Image style={styles.backgroundImage} source={require('../images/fuzzy.jpeg')}>
+          <View style={styles.form}>
+            <TextInput
+              placeholderTextColor='rgba(200, 200, 200, .8)'
+              style={styles.input}
+              placeholder='User Name'
+              value={this.state.username}
+              autoCapitalize='none'
+              onChangeText={(username) => this.setState({username})} />
+            <TextInput
+              placeholderTextColor='rgba(200, 200, 200, .8)'
+              style={styles.input}
+              placeholder='Password'
+              secureTextEntry
+              value={this.state.password}
+              autoCapitalize='none'
+              onChangeText={(password) => this.setState({password})} />
+            <View style={styles.buttonWrapper}>
+              <Button color='white' title='Login' onPress={this.login} />
+              <Button color='white' title='Register' onPress={this.register} />
+            </View>
           </View>
-        </View>
+        </Image>
       </Layout>
     ) : (
       this.props.children
@@ -77,31 +73,47 @@ RequireAuth.propTypes = {
     })
   }).isRequired
 }
-const RegisterWithData = withApollo(graphql(MyQuery)(RequireAuth))
-export default (WrappedComponent) =>
-  (props) => (
-    <RegisterWithData>
+const RegisterWithData = withApollo(RequireAuth)
+export default (WrappedComponent) => {
+  const HIC = (props) => (
+    <RegisterWithData {...props}>
       <WrappedComponent {...props} />
     </RegisterWithData>
   )
+  HIC.propTypes = {
+    data: PropTypes.object.isRequired
+  }
+  return HIC
+}
 
 const styles = StyleSheet.create({
+  backgroundImage: {
+    flex: 1,
+    resizeMode: 'cover',
+    width: Dimensions.get('window').width
+  },
   form: {
+    alignSelf: 'stretch',
     justifyContent: 'center',
     alignItems: 'center',
     flex: 1,
     flexDirection: 'column'
   },
-  registerTitle: {
-    fontSize: 30,
-    marginBottom: 20
-  },
   input: {
-    width: 250,
-    height: 40,
-    textAlign: 'center'
+    backgroundColor: 'rgba(40, 40, 40, .4)',
+    alignSelf: 'stretch',
+    height: 80,
+    textAlign: 'center',
+    color: 'white'
   },
   buttonWrapper: {
-    flexDirection: 'row'
+    backgroundColor: 'transparent',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 200
+  },
+  button: {
+    color: 'white'
   }
 })

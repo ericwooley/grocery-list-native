@@ -7,23 +7,19 @@
 import React, { Component } from 'react'
 import { AppRegistry, Navigator } from 'react-native'
 import MyLists from './scenes/MyLists'
-
-import ApolloClient, { createNetworkInterface } from 'apollo-client'
 import { ApolloProvider } from 'react-apollo'
-// By default, this client will send queries to the
-//  `/graphql` endpoint on the same host
-const client = new ApolloClient({
-  networkInterface: createNetworkInterface({ uri: 'http://127.0.0.1:8090/graphql' })
-})
-
+import client from './apolloClient'
+import Layout from './components/layout'
 
 export default class groceryListNative extends Component {
   render () {
     return (
       <ApolloProvider client={client}>
-        <Navigator
-          initialRoute={{ title: 'My Lists', index: 0 }}
-          renderScene={(route, navigator) => <MyLists />} />
+        <Layout>
+          <Navigator
+            initialRoute={{ title: 'My Lists', index: 0 }}
+            renderScene={(route, navigator) => <MyLists />} />
+        </Layout>
       </ApolloProvider>
     )
   }

@@ -1,6 +1,5 @@
 import React, {PropTypes} from 'react'
 import { StyleSheet, Text, View } from 'react-native'
-import Layout from '../components/layout'
 import { graphql } from 'react-apollo'
 import gql from 'graphql-tag'
 import requireAuth from '../HOC/requireAuth'
@@ -20,13 +19,11 @@ query userWithLists {
 }
 `
 export const MyLists = (props) => (
-  <Layout>
-    <View style={styles.form}>
-      <Text style={styles.registerTitle}>
-        My Lists: {!props.data.loading && props.data.user.lists.length}
-      </Text>
-    </View>
-  </Layout>
+  <View style={styles.form}>
+    <Text style={styles.registerTitle}>
+      My Lists: {!props.data.loading && props.data.user.lists.length}
+    </Text>
+  </View>
 )
 
 MyLists.propTypes = {
@@ -43,7 +40,7 @@ MyLists.propTypes = {
     })
   }).isRequired
 }
-export default requireAuth(graphql(MyQuery)(MyLists))
+export default graphql(MyQuery)(requireAuth(MyLists))
 const styles = StyleSheet.create({
   form: {
     paddingTop: 20,
