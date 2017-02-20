@@ -1,6 +1,7 @@
 {
 	"globals": {
-		"it": true
+		"it": true,
+    "alert": true
 	},
   "extends": ["standard", "standard-react", "plugin:flowtype/recommended"],
 	"plugins": [
