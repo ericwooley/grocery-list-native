@@ -5,6 +5,7 @@ import {withApollo} from 'react-apollo'
 import ApolloClient from 'apollo-client'
 const Menu = (props) => (
   <View style={styles.menu}>
+    {props.extraActions}
     <Button color='white' title='🏃 Logout'
       onPress={() => Alert.alert('Logout?', 'Are you sure?', [
         {text: 'Cancel', onPress: props.afterAction},
@@ -22,7 +23,8 @@ const Menu = (props) => (
 
 Menu.propTypes = {
   client: PropTypes.instanceOf(ApolloClient).isRequired,
-  afterAction: PropTypes.func.isRequired
+  afterAction: PropTypes.func.isRequired,
+  extraActions: PropTypes.arrayOf(PropTypes.any)
 }
 export default withApollo(Menu)
 const styles = StyleSheet.create({

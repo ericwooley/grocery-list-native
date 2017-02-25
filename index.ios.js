@@ -9,17 +9,15 @@ import { AppRegistry, Navigator } from 'react-native'
 import MyLists from './scenes/MyLists'
 import { ApolloProvider } from 'react-apollo'
 import client from './apolloClient'
-import Layout from './components/layout'
+
 
 export default class groceryListNative extends Component {
   render () {
     return (
       <ApolloProvider client={client}>
-        <Layout>
-          <Navigator
-            initialRoute={{ title: 'My Lists', index: 0 }}
-            renderScene={(route, navigator) => <MyLists />} />
-        </Layout>
+        <Navigator
+          initialRoute={{ title: 'My Lists', index: 0 }}
+          renderScene={(route, navigator) => <MyLists />} />
       </ApolloProvider>
     )
   }

@@ -1,9 +1,10 @@
 import React, { Component, PropTypes } from 'react'
-import { Dimensions, StyleSheet, View, Button, StatusBar } from 'react-native'
+import { Dimensions, View, StatusBar } from 'react-native'
 import Menu from '../components/Menu'
 import Drawer from 'react-native-drawer'
 import gql from 'graphql-tag'
 import { graphql } from 'react-apollo'
+import { Container, Header, Title, Button, Icon, Right, Body, Left } from 'native-base'
 const connect = graphql(gql`
 query UserName {
   user {
@@ -36,25 +37,19 @@ class Layout extends Component {
         styles={drawerStyles}
         // tweenHandler={Drawer.tweenPresets.parallax}
         ref={(ref) => { this._drawer = ref }}
-        content={<Menu afterAction={() => this._drawer.close()} />}>
-        <View style={{
-          justifyContent: 'flex-end',
-          alignItems: 'flex-end',
-          flex: 0,
-          height: 50,
-          paddingTop: 20,
-          paddingRight: 10,
-          // width: Dimensions.get('window').width,
-          backgroundColor: '#FBFBFB'}}>
-          <Button style={{
-            fontSize: 40,
-            width: 40,
-            height: 40
-          }} color='black' title='☰' onPress={() => this._drawer.open()} />
-        </View>
-        <View style={styles.container}>
+        content={<Menu extraActions={this.props.extraActions} afterAction={() => this._drawer.close()} />}>
+        <Container style={{flex: 1}}>
+          <Header>
+            <Left />
+            <Body><Title>Header</Title></Body>
+            <Right>
+              <Button transparent onPress={() => this._drawer.open()}>
+                <Icon name='ios-menu' style={{color: 'black'}} />
+              </Button>
+            </Right>
+          </Header>
           {this.props.children}
-        </View>
+        </Container>
       </Drawer>
     )
   }
@@ -77,14 +72,9 @@ const drawerStyles = {
 }
 Layout.propTypes = {
   children: PropTypes.element.isRequired,
+  extraActions: PropTypes.arrayOf(PropTypes.any),
   data: PropTypes.shape({
     loading: PropTypes.bool,
     user: PropTypes.object
   })
 }
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FBFBFB'
-  }
-})

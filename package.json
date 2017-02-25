@@ -3,17 +3,23 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "dev": "react-native run-ios",
     "start": "node node_modules/react-native/local-cli/cli.js start",
+    "postinstall": "react-native link",
     "test": "jest"
   },
   "dependencies": {
+    "@maintained-repos/react-native-swipeout": "^3.1.5",
     "apollo-client": "^0.8.7",
+    "compose-function": "^3.0.3",
     "flow-bin": "^0.37.4",
+    "fuzzysearch": "^1.0.3",
     "graphql-anywhere": "^2.2.0",
     "graphql-tag": "^1.2.4",
+    "native-base": "^2.0.10",
     "react": "~15.4.0",
     "react-apollo": "^0.11.1",
-    "react-native": "0.41.2",
+    "react-native": "^0.41.2",
     "react-native-drawer": "^2.3.0",
     "react-native-material-kit": "^0.4.1",
     "redux": "^3.6.0"
@@ -30,7 +36,8 @@
     "eslint-plugin-react": "^6.10.0",
     "eslint-plugin-standard": "^2.0.1",
     "jest": "18.1.0",
-    "react-test-renderer": "~15.4.0"
+    "react-test-renderer": "~15.4.0",
+    "uuid": "^3.0.1"
   },
   "jest": {
     "preset": "react-native"
