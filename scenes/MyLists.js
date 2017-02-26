@@ -1,5 +1,5 @@
 import React, {PropTypes, Component} from 'react'
-import { StyleSheet, Button } from 'react-native'
+import { Button } from 'react-native'
 import AddList from '../components/addList'
 import { compose } from 'react-apollo'
 import requireAuth from '../HOC/requireAuth'
@@ -9,6 +9,7 @@ import Layout from '../components/layout'
 import userWithListsGQL from '../graphql/queries/userWithLists'
 import createListMutation from '../graphql/mutations/createList'
 import deleteListMutation from '../graphql/mutations/deleteList'
+import ListRow from '../components/listRow'
 export class MyLists extends Component {
   constructor () {
     super()
@@ -31,7 +32,9 @@ export class MyLists extends Component {
   render () {
     return (
       <Layout
-        header='My Lists'
+        route={this.props.route}
+        onBack={this.props.onBack}
+        header={this.props.route.title}
         extraActions={this.renderActions()}>
         <Content>
           <AddList
@@ -46,24 +49,20 @@ export class MyLists extends Component {
                 this.state.filter.toLowerCase(),
                 item.name.toLowerCase()
               ))} renderRow={(rowData, key) => (
-                <ListItem key={rowData.id} style={{flex: 1}} icon={this.state.showDelete}>
-                  {this.state.showDelete &&
-                    <Left>
-                      <BaseButton danger onPress={() => {
-                        this.props.deleteList(rowData.id)
-                        if (this.props.data.user.lists.length === 1) {
-                          this.setState({
-                            showDelete: false
-                          })
-                        }
-                      }}>
-                        <Icon name='ios-trash-outline' color='red' />
-                      </BaseButton>
-                    </Left>
-                  }
-                  <Body><Text>{rowData.name}</Text></Body>
-                  <Right />
-                </ListItem>
+                <ListRow
+                  key={rowData.id}
+                  onPress={() => this.props.openList(rowData)}
+                  showDelete={this.state.showDelete}
+                  onDelete={() => {
+                    this.props.deleteList(rowData.id)
+                    if (this.props.data.user.lists.length === 1) {
+                      this.setState({
+                        showDelete: false
+                      })
+                    }
+                  }}
+                  list={rowData}
+                   />
               )} />
           ) : (
             <Text style={{fontSize: 30, marginBottom: 20}}>
@@ -77,6 +76,9 @@ export class MyLists extends Component {
 }
 
 MyLists.propTypes = {
+  onBack: PropTypes.func.isRequired,
+  route: PropTypes.shape({title: PropTypes.string, index: PropTypes.number}).isRequired,
+  openList: PropTypes.func.isRequired,
   createList: PropTypes.func.isRequired,
   deleteList: PropTypes.func.isRequired,
   data: PropTypes.shape({
@@ -98,24 +100,3 @@ export default compose(
   createListMutation,
   requireAuth
 )(MyLists)
-const styles = StyleSheet.create({
-  form: {
-    paddingTop: 20,
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    flex: 1,
-    flexDirection: 'column'
-  },
-  registerTitle: {
-    fontSize: 30,
-    marginBottom: 20
-  },
-  input: {
-    width: 250,
-    height: 40,
-    textAlign: 'center'
-  },
-  buttonWrapper: {
-    flexDirection: 'row'
-  }
-})

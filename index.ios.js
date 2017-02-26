@@ -16,8 +16,22 @@ export default class groceryListNative extends Component {
     return (
       <ApolloProvider client={client}>
         <Navigator
-          initialRoute={{ title: 'My Lists', index: 0 }}
-          renderScene={(route, navigator) => <MyLists />} />
+          initialRoute={{ title: 'Lists', index: 0 }}
+          renderScene={(route, navigator) => {
+            console.log('route', route, 'navigation', navigator)
+            return (
+              <MyLists
+                onBack={navigator.pop}
+                route={route}
+                openList={(list: {name: string, id: number}) => {
+                  navigator.push({
+                    title: `list: ${list.name}`,
+                    list,
+                    index: route.index + 1
+                  })
+                }}
+                />)
+          }} />
       </ApolloProvider>
     )
   }

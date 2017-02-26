@@ -40,7 +40,13 @@ class Layout extends Component {
         content={<Menu extraActions={this.props.extraActions} afterAction={() => this._drawer.close()} />}>
         <Container style={{flex: 1}}>
           <Header>
-            <Left />
+            <Left>
+              {this.props.route.index > 0 &&
+                <Button transparent onPress={this.props.onBack}>
+                  <Icon name='ios-arrow-back' style={{color: 'black'}} />
+                </Button>
+              }
+            </Left>
             <Body><Title>{this.props.header}</Title></Body>
             <Right>
               <Button transparent onPress={() => this._drawer.open()}>
@@ -71,6 +77,8 @@ const drawerStyles = {
   main: {paddingLeft: 3}
 }
 Layout.propTypes = {
+  route: PropTypes.shape({index: PropTypes.number}).isRequired,
+  onBack: PropTypes.func.isRequired,
   header: PropTypes.any,
   children: PropTypes.element.isRequired,
   extraActions: PropTypes.arrayOf(PropTypes.any),
