@@ -7,7 +7,7 @@ const client = new ApolloClient({
   networkInterface: createNetworkInterface({ uri: 'http://127.0.0.1:8090/graphql' }),
   dataIdFromObject: (result) => {
     if (result.id && result.__typename) {
-      console.log(result.__typename + result.id)
+      // console.log(result.__typename + result.id)
       return result.__typename + result.id
     }
 

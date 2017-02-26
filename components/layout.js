@@ -41,7 +41,7 @@ class Layout extends Component {
         <Container style={{flex: 1}}>
           <Header>
             <Left />
-            <Body><Title>Header</Title></Body>
+            <Body><Title>{this.props.header}</Title></Body>
             <Right>
               <Button transparent onPress={() => this._drawer.open()}>
                 <Icon name='ios-menu' style={{color: 'black'}} />
@@ -71,6 +71,7 @@ const drawerStyles = {
   main: {paddingLeft: 3}
 }
 Layout.propTypes = {
+  header: PropTypes.any,
   children: PropTypes.element.isRequired,
   extraActions: PropTypes.arrayOf(PropTypes.any),
   data: PropTypes.shape({

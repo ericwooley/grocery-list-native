@@ -1,100 +1,43 @@
 import React, {PropTypes, Component} from 'react'
 import { StyleSheet, Button } from 'react-native'
 import AddList from '../components/addList'
-import { graphql, compose } from 'react-apollo'
-import gql from 'graphql-tag'
+import { compose } from 'react-apollo'
 import requireAuth from '../HOC/requireAuth'
 import { Content, ListItem, Text, Left, Icon, Body, Right, Button as BaseButton, List } from 'native-base'
 import fuzzysearch from 'fuzzysearch'
 import Layout from '../components/layout'
-const ListInfoFragment = gql`
-fragment ListInfoFragment on ShoppingList {
-  id,
-  name,
-  items {
-    name,
-    id
-  }
-}
-`
-const connector = compose(
-  graphql(gql`
-  query userWithLists {
-    user {
-      id,
-      username,
-      lists {
-       ... ListInfoFragment
-      }
-    }
-  }
-  ${ListInfoFragment}`),
-  graphql(gql`
-    mutation createList ($name: String!) {
-      createList(name: $name ) {
-        ... ListInfoFragment
-      }
-    }
-    ${ListInfoFragment}
-    `, {props: (props) => ({
-      ...props,
-      createList: (name) =>
-        props.mutate({
-          variables: {name},
-          forceRefresh: true,
-          optimisticResponse: {
-            __typename: 'Mutation',
-            createList: {
-              __typename: 'ShoppingList',
-              id: props.ownProps.data.user.lists
-                .reduce((lastId, item) =>
-                  item.id > lastId ? item.id + 1 : lastId, 0),
-              name,
-              items: []
-            }
-          },
-          updateQueries: {
-            userWithLists: (prev, { mutationResult }) => {
-              const newList = mutationResult.data.createList
-              console.log('got prev', prev, 'new ', newList)
-              const updatedQuery = {
-                ...prev,
-                user: {
-                  __typename: 'User',
-                  ...prev.user,
-                  lists: [...prev.user.lists, newList]
-                }
-              }
-              return updatedQuery
-            }
-          }
-        })
-        .then(() => setTimeout(() => props.ownProps.data.refetch(), 5000))
-    })}),
-  requireAuth
-)
-
+import userWithListsGQL from '../graphql/queries/userWithLists'
+import createListMutation from '../graphql/mutations/createList'
+import deleteListMutation from '../graphql/mutations/deleteList'
 export class MyLists extends Component {
   constructor () {
     super()
     this.state = {filter: '', showDelete: false}
   }
+  renderActions () {
+    const actions = []
+    if (this.props.data.user.lists.length) {
+      actions.push(
+        <Button
+          key={1}
+          color='white'
+          title={this.state.showDelete ? 'Done' : '✎ Delete Lists'}
+          onPress={() => this.setState({
+            showDelete: !this.state.showDelete
+          })} />)
+    }
+    return actions
+  }
   render () {
     return (
       <Layout
-        extraActions={[
-          <Button
-            key={1}
-            color='white'
-            title='✎ Edit List'
-            onPress={() => this.setState({
-              showDelete: !this.state.showDelete
-            })} />
-        ]}
-      >
+        header='My Lists'
+        extraActions={this.renderActions()}>
         <Content>
           <AddList
-            onAdd={(name) => this.props.createList(name)}
+            onAdd={(name) => {
+              this.props.createList(name)
+            }}
             onFilterChange={(filter) => this.setState({filter})} />
           {this.props.data.user.lists.length ? (
             <List dataArray={
@@ -106,15 +49,24 @@ export class MyLists extends Component {
                 <ListItem key={rowData.id} style={{flex: 1}} icon={this.state.showDelete}>
                   {this.state.showDelete &&
                     <Left>
-                      <BaseButton danger onPress={() => alert('works')}><Icon name='ios-trash-outline' color='red' /></BaseButton>
+                      <BaseButton danger onPress={() => {
+                        this.props.deleteList(rowData.id)
+                        if (this.props.data.user.lists.length === 1) {
+                          this.setState({
+                            showDelete: false
+                          })
+                        }
+                      }}>
+                        <Icon name='ios-trash-outline' color='red' />
+                      </BaseButton>
                     </Left>
                   }
-                  <Body><Text>{rowData.id} - {rowData.name}</Text></Body>
+                  <Body><Text>{rowData.name}</Text></Body>
                   <Right />
                 </ListItem>
               )} />
           ) : (
-            <Text style={styles.registerTitle}>
+            <Text style={{fontSize: 30, marginBottom: 20}}>
                 You have no lists
             </Text>
           )}
@@ -126,6 +78,7 @@ export class MyLists extends Component {
 
 MyLists.propTypes = {
   createList: PropTypes.func.isRequired,
+  deleteList: PropTypes.func.isRequired,
   data: PropTypes.shape({
     loading: PropTypes.bool.isRequired,
     user: PropTypes.shape({
@@ -139,7 +92,12 @@ MyLists.propTypes = {
     })
   }).isRequired
 }
-export default connector(MyLists)
+export default compose(
+  userWithListsGQL,
+  deleteListMutation,
+  createListMutation,
+  requireAuth
+)(MyLists)
 const styles = StyleSheet.create({
   form: {
     paddingTop: 20,
