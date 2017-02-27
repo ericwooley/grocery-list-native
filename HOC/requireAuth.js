@@ -1,6 +1,5 @@
 import React, {PropTypes, Component} from 'react'
-import { Text, ActivityIndicator, Dimensions, StyleSheet, View, TextInput, Button, Image } from 'react-native'
-import Layout from '../components/layout'
+import { Text, ActivityIndicator, Dimensions, StyleSheet, View, TextInput, Button, Image, StatusBar } from 'react-native'
 import { withApollo } from 'react-apollo'
 import register from '../requests/register'
 import login from '../requests/login'
@@ -33,7 +32,6 @@ export class RequireAuth extends Component {
     if (this.props.data.loading && !this.props.data.user) {
       return (
         <View style={{flex: 1}}>
-
           <ActivityIndicator
             animating={this.state.animating}
             style={[styles.centering, {height: 80}]}
@@ -42,8 +40,10 @@ export class RequireAuth extends Component {
         </View>
       )
     }
+    const {height, width} = Dimensions.get('window')
     return !this.props.data.user ? (
-      <Layout>
+      <View style={{height, width}}>
+        <StatusBar backgroundColor='blue' barStyle='light-content' />
         <Image style={styles.backgroundImage} source={require('../images/fuzzy.jpeg')}>
           <View style={styles.form}>
             <TextInput
@@ -67,7 +67,7 @@ export class RequireAuth extends Component {
             </View>
           </View>
         </Image>
-      </Layout>
+      </View>
     ) : (
       this.props.children
     )
