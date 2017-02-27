@@ -18,7 +18,7 @@
     "graphql-tag": "^1.2.4",
     "native-base": "^2.0.10",
     "react": "~15.4.0",
-    "react-apollo": "^0.11.1",
+    "react-apollo": "^0.12.0",
     "react-native": "^0.41.2",
     "react-native-drawer": "^2.3.0",
     "react-native-material-kit": "^0.4.1",

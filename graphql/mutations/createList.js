@@ -45,7 +45,6 @@ export default graphql(
             }
           })
           .then(props.ownProps.data.refetch)
-          .catch(e => alert('Error creating a list: ' + e.message))
         }
       })
     }
